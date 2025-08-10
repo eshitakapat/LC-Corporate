@@ -30,6 +30,7 @@ app.get('/', (req, res) => {
     res.send('Server is running and connected to MongoDB Atlas')
 });
 app.use('/', urlRoutes);
+app.use('/urls', urlRoutes); 
 
 //Start Server
 

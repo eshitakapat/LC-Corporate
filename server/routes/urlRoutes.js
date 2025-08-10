@@ -14,18 +14,27 @@ router.post('/shorten' , async(req , res) => {
         let existingUrl = await Url.findOne({originalUrl});
         if(existingUrl){
             return res.json({shortUrl : `http://localhost:5000/${existingUrl.shortCode}`})
-            
         }
 
-        const newUrl = new Url({originalUrl});
+        const newUrl = new Url({originalUrl, shortCode: shortid.generate()});
         await newUrl.save();
 
         res.json({shortUrl: `http://localhost:5000/${newUrl.shortCode}`});
     }catch(err){
-     console.error(err);
-     res.status(500).json({error: 'Server Error'});
+        console.error(err);
+        res.status(500).json({error: 'Server Error'});
     }
+});
 
+// ✅ New route for Admin Panel
+router.get('/urls', async (req, res) => {
+    try {
+        const urls = await Url.find().sort({ createdAt: -1 });
+        res.json(urls);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server Error' });
+    }
 });
 
 router.get('/:shortCode', async(req,res) => {
@@ -40,8 +49,9 @@ router.get('/:shortCode', async(req,res) => {
             return res.status(404).json({error:"URL not found"});
         }
     } catch(err) {
-console.error(err);
-res.status(500).json({error: 'Server error'});
+        console.error(err);
+        res.status(500).json({error: 'Server error'});
     }
 })
+
 module.exports = router;
